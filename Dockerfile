@@ -4,6 +4,7 @@ FROM photon:4.0
 ARG OS_ARCH="amd64"
 ARG PACKER_VERSION="1.8.6"
 ARG VSPHERE_PLUGIN_VERSION="1.1.1"
+ARG ANSIBLE_VERSION="2.14.4"
 ARG LABEL_PREFIX=com.vmware.eocto
 
 # add metadata via labels
@@ -19,14 +20,30 @@ LABEL ${LABEL_PREFIX}.project="commonpool"
 # set working to user's home directory
 WORKDIR ${HOME}
 
-# update repositories, install packages, and then clean up
+# update repositories
 RUN tdnf update -y && \
-    tdnf install -y wget tar git ansible unzip && \
+    tdnf install -y glibc-i18n && \
+    tdnf clean all && \
+    locale-gen.sh
+
+ENV LOCALE=en_US.utf-8
+ENV LC_ALL=en_US.utf-8
+
+# Install packages, packer, packer-vsphere, ansible & ansible.windows
+RUN tdnf update -y && \
+    tdnf install -y wget tar git unzip cdrkit openssh python3 python3-pip python3-pyyaml python3-jinja2 python3-xml python3-paramiko python3-resolvelib && \
     wget -q https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_${OS_ARCH}.zip && \
-    unzip -o -d /usr/local/bin/ packer_${PACKER_VERSION}_linux_${OS_ARCH}.zip && \
+    wget -q https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_SHA256SUMS && \
+    sed -i '/.*linux_${OS_ARCH}.zip/!d' packer_${PACKER_VERSION}_SHA256SUMS && \
+    sha256sum --check --status packer_${PACKER_VERSION}_SHA256SUMS && \
+    unzip packer_${PACKER_VERSION}_linux_amd64.zip -d /bin && \
     packer plugins install github.com/hashicorp/vsphere v${VSPHERE_PLUGIN_VERSION} && \
-    rm packer_${PACKER_VERSION}_linux_${OS_ARCH}.zip && \
-    tdnf erase -y unzip && \
+    rm -f packer_${PACKER_VERSION}_linux_amd64.zip && \
+    rm -f packer_${PACKER_VERSION}_SHA256SUMS && \
+    pip3 install ansible-core==${ANSIBLE_VERSION} && \
+    pip3 install pywinrm[credssp] && \
+    ansible-galaxy collection install ansible.windows && \
+    tdnf erase -y python3-pip && unzip && \
     tdnf clean all
 
 # set entrypoint to terraform, not a shell
