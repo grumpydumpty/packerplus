@@ -34,11 +34,11 @@ RUN tdnf update -y && \
     tdnf install -y wget tar git unzip cdrkit openssh python3 python3-pip python3-pyyaml python3-jinja2 python3-xml python3-paramiko python3-resolvelib && \
     wget -q https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_${OS_ARCH}.zip && \
     wget -q https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_SHA256SUMS && \
-    sed -i '/.*linux_${OS_ARCH}.zip/!d' packer_${PACKER_VERSION}_SHA256SUMS && \
+    sed -i "/.*linux_amd64.zip/!d" packer_${PACKER_VERSION}_SHA256SUMS && \
     sha256sum --check --status packer_${PACKER_VERSION}_SHA256SUMS && \
-    unzip packer_${PACKER_VERSION}_linux_amd64.zip -d /bin && \
+    unzip packer_${PACKER_VERSION}_linux_${OS_ARCH}.zip -d /bin && \
     packer plugins install github.com/hashicorp/vsphere v${VSPHERE_PLUGIN_VERSION} && \
-    rm -f packer_${PACKER_VERSION}_linux_amd64.zip && \
+    rm -f packer_${PACKER_VERSION}_linux_${OS_ARCH}.zip && \
     rm -f packer_${PACKER_VERSION}_SHA256SUMS && \
     pip3 install ansible-core==${ANSIBLE_VERSION} && \
     pip3 install pywinrm[credssp] && \
