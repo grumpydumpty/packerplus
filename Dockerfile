@@ -33,7 +33,7 @@ ENV LC_ALL=en_US.utf-8
 # update repositories, install packages, and then clean up
 RUN tdnf update -y && \
     # grab what we can via standard packages
-    tdnf install -y wget tar git unzip cdrkit openssh python3 python3-pip python3-pyyaml python3-jinja2 python3-xml python3-paramiko python3-resolvelib shadow jq && \
+    tdnf install -y ansible bash ca-certificates cdrkit curl diffutils gawk git htop jq mc nodejs openssh python3 python3-jinja2 python3-paramiko python3-pip python3-pyyaml python3-resolvelib python3-xml shadow tar tmux unzip wget && \
     # add user/group
     useradd -u ${USER_ID} -m ${USER} && \
     chown -R ${USER_ID}:${GROUP_ID} /home/${USER} && \
