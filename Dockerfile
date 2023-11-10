@@ -2,9 +2,6 @@ FROM photon:5.0
 
 # set argument defaults
 ARG OS_ARCH="amd64"
-ARG PACKER_VERSION="1.9.4"
-ARG VSPHERE_PLUGIN_VERSION="1.2.2"
-ARG ANSIBLE_VERSION="2.15"
 ARG USER=vlabs
 ARG USER_ID=1280
 ARG GROUP=users
@@ -33,7 +30,7 @@ ENV LC_ALL=en_US.utf-8
 # update repositories, install packages, and then clean up
 RUN tdnf update -y && \
     # grab what we can via standard packages
-    tdnf install -y ansible bash ca-certificates cdrkit curl diffutils gawk git htop jq mc nodejs openssh python3 python3-jinja2 python3-paramiko python3-pip python3-pyyaml python3-resolvelib python3-xml shadow tar tmux unzip wget && \
+    tdnf install -y ansible bash ca-certificates cdrkit curl diffutils gawk git jq nodejs openssh python3 python3-jinja2 python3-paramiko python3-pip python3-pyyaml python3-resolvelib python3-xml shadow tar unzip && \
     # add user/group
     useradd -u ${USER_ID} -m ${USER} && \
     chown -R ${USER_ID}:${GROUP_ID} /home/${USER} && \
@@ -42,17 +39,16 @@ RUN tdnf update -y && \
     chown -R ${USER_ID}:${GROUP_ID} /workspace && \
     # set git config
     echo -e "[safe]\n\tdirectory=/workspace" > /etc/gitconfig && \
-    # install packer and packer vsphere plugin
-    wget -q https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_${OS_ARCH}.zip && \
-    wget -q https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_SHA256SUMS && \
-    sed -i "/.*linux_${OS_ARCH}.zip/!d" packer_${PACKER_VERSION}_SHA256SUMS && \
-    sha256sum --check --status packer_${PACKER_VERSION}_SHA256SUMS && \
-    unzip packer_${PACKER_VERSION}_linux_${OS_ARCH}.zip -d /bin && \
-    packer plugins install github.com/hashicorp/vsphere v${VSPHERE_PLUGIN_VERSION} && \
-    rm -f packer_${PACKER_VERSION}_linux_${OS_ARCH}.zip && \
-    rm -f packer_${PACKER_VERSION}_SHA256SUMS && \
+    # grab packer
+    PACKER_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/packer/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    curl -skSLo packer.zip https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_${OS_ARCH}.zip && \
+    unzip -o -d /usr/local/bin/ packer.zip && \
+    rm -f packer.zip && \
+    # grab packer vsphere plugin
+    VSPHERE_PLUGIN_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/packer-plugin-vsphere/releases/latest | jq -r '.tag_name') && \
+    packer plugins install github.com/hashicorp/vsphere ${VSPHERE_PLUGIN_VERSION} && \
     # install ansible
-    pip3 install ansible-core==${ANSIBLE_VERSION} && \
+    pip3 install ansible-core && \
     pip3 install pywinrm[credssp] && \
     ansible-galaxy collection install ansible.windows && \
     # clean up
