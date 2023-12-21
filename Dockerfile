@@ -3,7 +3,7 @@ FROM photon:5.0
 # set argument defaults
 ARG OS_ARCH="amd64"
 ARG USER=vlabs
-ARG USER_ID=1280
+ARG USER_ID=1000
 ARG GROUP=users
 ARG GROUP_ID=100
 #ARG LABEL_PREFIX=com.vmware.eocto
@@ -33,7 +33,8 @@ RUN tdnf update -y && \
     tdnf install -y ansible bash ca-certificates cdrkit curl diffutils gawk git jq nodejs openssh python3 python3-jinja2 python3-paramiko python3-pip python3-pyyaml python3-resolvelib python3-xml shadow tar unzip && \
     # add user/group
     # groupadd -g ${GROUP_ID} ${GROUP} && \
-    useradd -u ${USER_ID} -m ${USER} && \
+    # useradd -u ${USER_ID} -g ${GROUP} -m ${USER} && \
+    useradd -g ${GROUP} -m ${USER} && \
     chown -R ${USER_ID}:${GROUP_ID} /home/${USER} && \
     # add /workspace and give user permissions
     mkdir -p /workspace && \
