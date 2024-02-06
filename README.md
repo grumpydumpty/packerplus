@@ -1,5 +1,7 @@
 # Container Image for HashiCorp Packer and Ansible
 
+![](logo.png)
+
 ## Overview
 
 Provides a container image for running HashiCorp Packer and Ansible.
