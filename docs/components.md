@@ -1,15 +1,14 @@
-# Components
+---
+title: Components
+draft: false
+date: 2022-01-31
+authors:
+  - grumpydumpty
+---
 
 This image includes the following components:
 
-This image includes the following components:
-
-| Component                        | Version | Description                                                                                              |
-|----------------------------------|---------|----------------------------------------------------------------------------------------------------------|
-| VMware Photon OS                 | 5.0     | A Linux container host optimized for vSphere and cloud-computing platforms.                              |
-| Ansible                          | 2.12.7  | A suite of software tools that enables infrastructure as code.                                           |
-| HashiCorp Packer                 | 1.8.6   | Packer is an open source image creation tool.                                                            |
-| Packer Plugin for VMware vSphere | 1.1.1   | Packer Plugin that uses the vSphere API to creates virtual machines remotely, starting from an ISO file. |
+<!-- DO NOT EDIT BELOW THIS LINE -->
 
 | Package/Tool                         | Version  |
 |--------------------------------------|----------|
