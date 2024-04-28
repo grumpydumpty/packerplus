@@ -96,3 +96,6 @@ These can be set at any level but we generally set them at the group or project 
 ## Package Versions
 
 <!-- snip -->
+| Package | Version |
+|---------|---------|
+| PACKER | 1.10.2 |
