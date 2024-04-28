@@ -40,14 +40,14 @@ RUN tdnf update -y && \
     mkdir -p /workspace && \
     chown -R ${USER_ID}:${GROUP_ID} /workspace && \
     # set git config
-    echo -e "[safe]\n\tdirectory=/workspace" > /etc/gitconfig && \
+    git config --system --add safe.directory "/workspace" && \
     # grab packer
-    PACKER_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/packer/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
+    export PACKER_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/packer/releases/latest | jq -r '.tag_name' | tr -d 'v') && \
     curl -skSLo packer.zip https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_${OS_ARCH}.zip && \
     unzip -o -d /usr/local/bin/ packer.zip && \
     rm -f packer.zip && \
     # grab packer vsphere plugin
-    VSPHERE_PLUGIN_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/packer-plugin-vsphere/releases/latest | jq -r '.tag_name') && \
+    export VSPHERE_PLUGIN_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/packer-plugin-vsphere/releases/latest | jq -r '.tag_name') && \
     packer plugins install github.com/hashicorp/vsphere ${VSPHERE_PLUGIN_VERSION} && \
     # install ansible
     pip3 install ansible-core && \
