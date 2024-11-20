@@ -69,7 +69,8 @@ RUN tdnf update -y && \
     git config --system --add safe.directory "/workspace"
 
 # install ansible
-RUN pip3 install ansible-core && \
+RUN pip3 install --upgrade pip && \
+    pip3 install ansible-core && \
     pip3 install pywinrm[credssp] && \
     ansible-galaxy collection install ansible.windows
 
