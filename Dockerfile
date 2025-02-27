@@ -43,13 +43,6 @@ RUN PACKER_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/
 RUN VSPHERE_PLUGIN_VERSION=$(curl -H 'Accept: application/json' -sSL https://github.com/hashicorp/packer-plugin-vsphere/releases/latest | jq -r '.tag_name') && \
     packer plugins install github.com/hashicorp/vsphere ${VSPHERE_PLUGIN_VERSION}
 
-# harden and remove unnecessary packages
-RUN chown -R root:root /usr/local/bin/ && \
-    chown root:root /var/log && \
-    chmod 0640 /var/log && \
-    chown root:root /usr/lib/ && \
-    chmod 755 /usr/lib/
-
 # switch back to non-root user
 USER ${USER}:${GROUP}
 
